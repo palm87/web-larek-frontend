@@ -13,35 +13,36 @@ export interface IProductsData {
   getProduct(productId: string):IProduct;
 }
 
-export interface IBasket {
+export interface ICart {
   products: IProduct [];
-  _totalPrice: number;
-  _totalAmount: number;
+  totalPrice: number;
+  totalAmount: number;
   addProduct(productId:string):void;
   removeProduct(productId:string):void;
 }
-
 
 export interface IOrder {
   payment: string;
   email: string;
   phone: string;
   address: string;
-  _total: number;
+  totalPrice: number;
   products: IProduct[];
   makeOrder():void;
-
 }
 
-export type TProductInBasket = Pick<IProduct, 'title' | 'price'>
+export type TTotalAmountInCart = Pick<ICart, 'totalAmount'>
+export type TTotalPriceInCart = Pick<ICart, 'totalPrice'>
+export type TProductInCart = Pick<IProduct, 'title' | 'price'>
 export type TOrderFormPayment = Pick<IOrder, 'payment' | 'address'>
 export type TOrderFormContacts = Pick<IOrder, 'email' | 'phone'>
-export type TOrderFormSuccess = Pick<IOrder, 'total'>
+export type TOrderFormSuccess = Pick<IOrder, 'totalPrice'>
 
 export interface IOrderSuccess {
   id: string;
   total: number
 }
+
 export interface IOrderError {
   error: string;
  }
