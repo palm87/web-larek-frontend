@@ -8,9 +8,9 @@ export interface IProduct {
 }
 
 export interface IProductsData {
-  _products: IProduct[];
+  products: IProduct[];
   preview: string | null;
-  getProduct(productId: string):IProduct;
+  getProduct(productId: string):IProduct| undefined;
 }
 
 export interface ICart {
@@ -26,17 +26,17 @@ export interface IOrder {
   email: string;
   phone: string;
   address: string;
-  totalPrice: number;
-  products: IProduct[];
-  makeOrder():void;
-}
+  total: number;
+  items: string[];
 
+}
+export type TProductId = Pick<IProduct, 'id'>
 export type TTotalAmountInCart = Pick<ICart, 'totalAmount'>
 export type TTotalPriceInCart = Pick<ICart, 'totalPrice'>
 export type TProductInCart = Pick<IProduct, 'title' | 'price'>
 export type TOrderFormPayment = Pick<IOrder, 'payment' | 'address'>
 export type TOrderFormContacts = Pick<IOrder, 'email' | 'phone'>
-export type TOrderFormSuccess = Pick<IOrder, 'totalPrice'>
+export type TOrderFormSuccess = Pick<IOrder, 'total'>
 
 export interface IOrderSuccess {
   id: string;
@@ -47,3 +47,18 @@ export interface IOrderError {
   error: string;
  }
 
+
+ export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+ export interface IApi {
+  baseUrl: string;
+  get<T>(uri: string): Promise<T>;
+  post<T>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
+}
+
+export interface IAppState {
+  catalog: IProduct[];
+  basket: string[];
+  preview: string | null;
+
+}
