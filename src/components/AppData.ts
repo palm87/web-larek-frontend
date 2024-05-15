@@ -41,6 +41,9 @@ export class AppState extends Model<IAppState> {
     getTotal() {
         return this.order.items.reduce((a, c) => a + this.catalog.find(it => it.id === c).price, 0)
     }
+    getBasketTotal() {
+        return this.basket.reduce((total, product) => total + product.price, 0);
+    }
 
     setCatalog(items: IProduct[]) {
         this.catalog = items.map(item => new Product(item, this.events));

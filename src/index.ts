@@ -182,7 +182,7 @@ events.on('basket:open', () =>  {
     modal.render({
         content: basket.render({
             items: cardsInBasket,
-            // price: appData.totalPrice,
+            total: appData.getBasketTotal(),
         }),
     });
 
@@ -213,7 +213,7 @@ events.on('modal:close', () => {
     page.locked = false;
 });
 
-
+console.log(appData)
 
 
 

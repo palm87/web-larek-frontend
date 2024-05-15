@@ -21,6 +21,7 @@ export interface ICard {
     image: string;
     price: number | null;
     isInCart: boolean;
+    index: number;
 }
 interface ICardActions {
     onClick: (event: MouseEvent) => void;
