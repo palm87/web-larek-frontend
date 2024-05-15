@@ -10,9 +10,8 @@ export type CatalogChangeEvent = {
 
 
 export class AppState extends Model<IAppState> {
-    basket: string[]=[];
+    basket: IProduct[]=[];
     catalog: IProduct[]=[];
-    loading: boolean;
     order: IOrder = {
         payment: '',
         email: '',
@@ -51,6 +50,10 @@ export class AppState extends Model<IAppState> {
     setPreview(item: IProduct) {
         this.preview = item.id;
         this.emitChanges('preview:changed', item);
+    }
+
+    addToCart(item: IProduct) {
+        this.basket.push(item)
     }
 
 

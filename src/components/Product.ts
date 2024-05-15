@@ -12,5 +12,5 @@ export class Product extends Model<IProduct> {
     description: string;
     image: string;
     price: number | null;
-    selected: boolean;
+    isInCart: boolean;
 }

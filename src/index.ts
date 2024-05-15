@@ -132,19 +132,10 @@ events.on('card:selected', (item: Product) => {
 
 events.on('preview:changed', (item: Product) => {
     const showItem = (item: Product) => {
-        const card = new Card(cloneTemplate(cardPreviewTemplate));
-        // const auction = new Auction(cloneTemplate(auctionTemplate), {
-        //     onSubmit: (price) => {
-        //         item.placeBid(price);
-        //         auction.render({
-        //             status: item.status,
-        //             time: item.timeStatus,
-        //             label: item.auctionStatus,
-        //             nextBid: item.nextBid,
-        //             history: item.history
-        //         });
-        //     }
-        // });
+        const card = new Card(cloneTemplate(cardPreviewTemplate), 
+        {
+            onClick: () => events.emit('item:addToCart', item),
+        })
 
         modal.render({
             content: card.render({
@@ -154,9 +145,11 @@ events.on('preview:changed', (item: Product) => {
                 price: item.price,
                 image: item.image,
                 description: item.description,
+                isInCart: item.isInCart
             })
         });
     };
+
     if (item) {
         api.getProductItem(item.id)
             .then((result) => {
@@ -169,9 +162,17 @@ events.on('preview:changed', (item: Product) => {
     } else {
         modal.close();
     }
+});
 
+events.on('item:addToCart', (item: Product) => {
+    item.isInCart = true;
+    appData.addToCart(item);
+    console.log(item)
+    page.counter=appData.basket.length;
+    modal.close();
 
 });
+
 
 
 
@@ -186,7 +187,15 @@ events.on('preview:changed', (item: Product) => {
 
 
 
+// Блокируем прокрутку страницы если открыта модалка
+events.on('modal:open', () => {
+    page.locked = true;
+});
 
+// ... и разблокируем
+events.on('modal:close', () => {
+    page.locked = false;
+});
 
 
 

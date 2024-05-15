@@ -20,6 +20,7 @@ export interface ICard {
     category: string;
     image: string;
     price: number | null;
+    isInCart: boolean;
 }
 interface ICardActions {
     onClick: (event: MouseEvent) => void;
@@ -35,7 +36,6 @@ export class Card extends Component<ICard> {
 
     constructor(container: HTMLElement, actions?: ICardActions) {
         super(container);
-
         this.cardTitle = ensureElement<HTMLElement>(`.card__title`, container);
         this.cardImage = container.querySelector(`.card__image`);
         this.text = container.querySelector(`.card__text`);
@@ -50,6 +50,7 @@ export class Card extends Component<ICard> {
                 container.addEventListener('click', actions.onClick);
             }
         }
+     
     }
 
     set title(value: string) {
