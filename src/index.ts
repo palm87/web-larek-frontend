@@ -12,6 +12,7 @@ import { Page } from './components/Page';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { Modal } from './components/common/Modal';
 import { Product } from './components/Product';
+import { Basket } from './components/common/Basket';
 
 
 const events = new EventEmitter
@@ -28,7 +29,14 @@ const appData = new AppState({}, events);
 // все шаблоны
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
+const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
+const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 
+
+
+// Переиспользуемые части интерфейса
+const basket = new Basket(cloneTemplate(basketTemplate), events);
+// const order = new Order(cloneTemplate(orderTemplate), events);
 // получить список товаров с сервера
 // для каждого отрисовать карточку
 // создать объект корзины
@@ -76,25 +84,6 @@ api.getProductsList()
 .catch((err) => {
      console.error(err);
 });
-
-// Получаем карточки с сервера
-// api.getProductsList()
-//     .then((data) => {
-//         console.log('Received data from server:', data);
-//         appData.setCatalog(data);
-//     })
-//     .catch((err) => {
-//         console.error('Error fetching product list:', err);
-//     });
-
-
-// // Получаем карточки с сервера
-// api.getProductsList()
-// .then(appData.setCatalog.bind(appData))
-// .catch((err) => {
-//      console.error(err);
-// });
-
 
 
 
@@ -167,10 +156,37 @@ events.on('preview:changed', (item: Product) => {
 events.on('item:addToCart', (item: Product) => {
     item.isInCart = true;
     appData.addToCart(item);
-    console.log(item)
-    page.counter=appData.basket.length;
+    events.emit('basket:changed')
     modal.close();
+});
 
+events.on('basket:changed', () =>  {
+    page.counter=appData.basket.length;} 
+    )
+
+events.on('basket:open', () =>  {
+    events.emit('modal:open');
+    const cardsInBasket = appData.basket.map((item) => {
+        const card = new Card(cloneTemplate(cardBasketTemplate), {
+            onClick: () => {
+                events.emit('item:remove', item);
+            },
+        });
+
+        return card.render({
+            title: item.title,
+            price: item.price,
+        });
+    });
+
+    modal.render({
+        content: basket.render({
+            items: cardsInBasket,
+            // price: appData.totalPrice,
+        }),
+    });
+
+    // basket.disableButton(!appData.basket.length);
 });
 
 
