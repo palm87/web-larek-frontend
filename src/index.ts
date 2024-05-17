@@ -38,14 +38,14 @@ const orderAddressTemplate = ensureElement<HTMLTemplateElement>('#order');
 const orderContactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const orderSuccessTemplate = ensureElement<HTMLTemplateElement>('#success');
 
-// Находим нужный элемент внутри содержимого шаблона
-// const tabsContainer = ensureElement<HTMLElement>('.order__buttons', orderAddressTemplate);
 
 
 // Переиспользуемые части интерфейса
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const orderWithAddress = new Order(cloneTemplate(orderAddressTemplate), events);
 const orderWithContacts = new Order(cloneTemplate(orderContactsTemplate), events);
+
+
 
 // const tabs = new Tabs(orderAddressTemplate, {
 //     onClick: (name) => {
@@ -191,6 +191,8 @@ events.on('basket:open', () =>  {
     });
 });
 
+
+//удаление товара из корзины
 events.on('basket:delete', (item: Product) =>  {
     item.isInCart = false;
     appData.basket = appData.basket.filter(thing=> thing !== item)
@@ -198,7 +200,7 @@ events.on('basket:delete', (item: Product) =>  {
     events.emit('basket:open');
 })
 
-// Открыть форму заказа
+//открытие формы заказа 1й шаг(с адресом и способом оплаты)
 events.on('order:start', () => {
     modal.render({
         content: orderWithAddress.render({
@@ -213,8 +215,8 @@ events.on('order:start', () => {
 // Изменилось состояние валидации формы
 events.on('form:changeValid', (errors: Partial<IOrderForm>) => {
     const { email, phone, address } = errors;
-    orderWithContacts.valid = (!email && !phone) || !address
     orderWithAddress.valid = !address;
+    orderWithContacts.valid = (!email && !phone) 
     orderWithAddress.errors = Object.values({address}).filter(i => !!i).join('; ');
     orderWithContacts.errors = Object.values({email, phone}).filter(i => !!i).join('; ');
 });
@@ -224,9 +226,9 @@ events.on('form:changeInput', (data: { field: keyof IOrderForm, value: string })
     appData.setOrderField(data.field, data.value);
 });
 
+//открытие формы заказа 2й шаг(с телефоном и почтой)
 events.on('order:submit', () => {
     // appData.order.total = appData.totalPrice;
-
     modal.render({
         content: orderWithContacts.render({
             phone: '',
@@ -237,20 +239,30 @@ events.on('order:submit', () => {
     });
 });
 
+
+const success = new Success(cloneTemplate(orderSuccessTemplate), {
+    onClick: () => {
+        modal.close();
+        appData.clearBasket();
+        appData.clearOrder();
+        events.emit('basket:changed');
+    }
+});
+
 //Отправка заказа на сервер
 events.on('contacts:submit', () => {
     appData.formOrder()
     appData.getTotal()
     api.makeOrder(appData.order)
     .then((result) => {
-    const success = new Success(cloneTemplate(orderSuccessTemplate), {
-        onClick: () => {
-            modal.close();
-            appData.clearBasket();
-            appData.clearOrder();
-            events.emit('basket:changed');
-        }
-    });
+    // const success = new Success(cloneTemplate(orderSuccessTemplate), {
+    //     onClick: () => {
+    //         modal.close();
+    //         appData.clearBasket();
+    //         appData.clearOrder();
+    //         events.emit('basket:changed');
+    //     }
+    // });
     modal.render({
         content: success.render({total: result.total })
     });
