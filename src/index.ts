@@ -46,8 +46,6 @@ const orderSuccessTemplate = ensureElement<HTMLTemplateElement>('#success');
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const orderWithAddress = new Order(cloneTemplate(orderAddressTemplate), events);
 const orderWithContacts = new Order(cloneTemplate(orderContactsTemplate), events);
-console.log(orderWithAddress)
-
 
 // const tabs = new Tabs(orderAddressTemplate, {
 //     onClick: (name) => {
@@ -73,12 +71,6 @@ console.log(orderWithAddress)
 //     console.log(appData.order.payment)
 // })
 
-
-
-// получить список товаров с сервера
-// для каждого отрисовать карточку
-// создать объект корзины
-// создать объект заказа
 
 // Глобальные контейнеры
 
@@ -250,17 +242,31 @@ events.on('contacts:submit', () => {
     appData.formOrder()
     appData.getTotal()
     api.makeOrder(appData.order)
-       .then((result) => {
-           modal.close();
-           events.emit('order:made', result);
-           appData.clearBasket();
-           appData.clearOrder();
-           events.emit('basket:changed');
-       })
-       .catch((err) => {
-           console.error(err);
-       });
-});
+    .then((result) => {
+    const success = new Success(cloneTemplate(orderSuccessTemplate), {
+        onClick: () => {
+            modal.close();
+            appData.clearBasket();
+            appData.clearOrder();
+            events.emit('basket:changed');
+        }
+    });
+    modal.render({
+        content: success.render({total: result.total })
+    });
+    //    .then((result) => {
+    //        modal.close();
+    //        events.emit('order:made', result);
+    //        appData.clearBasket();
+    //        appData.clearOrder();
+    //        events.emit('basket:changed');
+
+    //    })
+    //    .catch((err) => {
+    //        console.error(err);
+    //    })
+    })})
+
 
 // events.on('order:made', (result) => {
   
