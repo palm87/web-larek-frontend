@@ -1,11 +1,11 @@
 import { Api, ApiListResponse } from './base/api';
-import {IOrder, IProduct} from "../types";
+import {IOrder, IOrderResult, IProduct} from "../types";
 import { ICard } from './Card';
 
 export interface ILarekAPI {
     getProductsList: () => Promise<ICard[]>;
     getProductItem: (id: string) => Promise<ICard>;
-    // orderLots: (order: IOrder) => Promise<IOrderResult>;
+    makeOrder: (order: IOrder) => Promise<IOrderResult>;
 }
 
 export class AppApi extends Api implements ILarekAPI {
@@ -25,15 +25,6 @@ export class AppApi extends Api implements ILarekAPI {
         );
     }
 
-    // getProductsList(): Promise<ICard[]> {
-    //     return this.get('/product').then((data: ApiListResponse<ICard>) =>
-    //         data.items.map((item) => ({
-    //             ...item,
-    //             image: this.cdn + item.cardImage
-    //         }))
-    //     );
-    // }
-
     getProductsList(): Promise<ICard[]> {
         return this.get('/product')
             .then((data: ApiListResponse<ICard>) =>
@@ -44,11 +35,11 @@ export class AppApi extends Api implements ILarekAPI {
         );
     }
 
-    // orderProducts(order: IOrder): Promise<IOrderResult> {
-    //     return this.post('/order', order).then(
-    //         (data: IOrderResult) => data
-    //     );
-    // }
+    makeOrder(order: IOrder): Promise<IOrderResult> {
+        return this.post('/order', order).then(
+            (data: IOrderResult) => data
+        );
+    }
 
 }
 

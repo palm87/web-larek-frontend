@@ -62,3 +62,22 @@ export interface IAppState {
   preview: string | null;
 
 }
+export interface IOrderForm {
+  payment: string;
+  address: string;
+  email: string;
+  phone: string;
+
+}
+
+export interface IOrder extends IOrderForm {
+  items: string[]
+}
+
+
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
+
+export interface IOrderResult {
+    id: string;
+    total: number
+}
