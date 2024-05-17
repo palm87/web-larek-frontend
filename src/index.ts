@@ -1,13 +1,10 @@
 import { AppApi } from './components/AppApi';
 import { EventEmitter } from './components/base/events';
 import './scss/styles.scss';
-import { IApi, IOrderForm, IProduct } from './types';
-import { API_URL, CDN_URL, testCards} from './utils/constants';
-
-import { ProductData} from './components/ProductsData'
+import { IOrderForm} from './types';
+import { API_URL, CDN_URL} from './utils/constants';
 import { Card } from './components/Card';
-import { Api } from './components/base/api';
-import { AppState, CatalogChangeEvent } from './components/AppData';
+import { AppState } from './components/AppData';
 import { Page } from './components/Page';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { Modal } from './components/common/Modal';
@@ -15,7 +12,8 @@ import { Product } from './components/Product';
 import { Basket } from './components/common/Basket';
 import { Order } from './components/Order';
 import { Success } from './components/common/Success';
-import { Tabs } from './components/Tabs';
+import { ApiListResponse } from './components/base/api';
+
 
 
 const events = new EventEmitter
@@ -74,14 +72,6 @@ const orderWithContacts = new Order(cloneTemplate(orderContactsTemplate), events
 
 // Глобальные контейнеры
 
-
-
-
-
-// Чтобы мониторить все события, для отладки
-events.onAll(({ eventName, data }) => {
-    console.log(eventName, data);
-})
 events.on('items:changed', () => {
     page.catalog = appData.catalog.map((item) => {
         // Клонируем шаблон для каждой карточки
@@ -216,7 +206,7 @@ events.on('order:start', () => {
 events.on('form:changeValid', (errors: Partial<IOrderForm>) => {
     const { email, phone, address } = errors;
     orderWithAddress.valid = !address;
-    orderWithContacts.valid = (!email && !phone) 
+    orderWithContacts.valid = !email && !phone
     orderWithAddress.errors = Object.values({address}).filter(i => !!i).join('; ');
     orderWithContacts.errors = Object.values({email, phone}).filter(i => !!i).join('; ');
 });
@@ -240,14 +230,16 @@ events.on('order:submit', () => {
 });
 
 
-const success = new Success(cloneTemplate(orderSuccessTemplate), {
-    onClick: () => {
-        modal.close();
-        appData.clearBasket();
-        appData.clearOrder();
-        events.emit('basket:changed');
-    }
-});
+// const success = new Success(cloneTemplate(orderSuccessTemplate), {
+//     onClick: () => {
+//         modal.close();
+//         appData.clearBasket();
+//         appData.clearOrder();
+//         events.emit('basket:changed');
+//     }
+// });
+
+
 
 //Отправка заказа на сервер
 events.on('contacts:submit', () => {
@@ -255,32 +247,31 @@ events.on('contacts:submit', () => {
     appData.getTotal()
     api.makeOrder(appData.order)
     .then((result) => {
-    // const success = new Success(cloneTemplate(orderSuccessTemplate), {
-    //     onClick: () => {
-    //         modal.close();
-    //         appData.clearBasket();
-    //         appData.clearOrder();
-    //         events.emit('basket:changed');
-    //     }
-    // });
-    modal.render({
-        content: success.render({total: result.total })
-    });
-    //    .then((result) => {
-    //        modal.close();
-    //        events.emit('order:made', result);
-    //        appData.clearBasket();
-    //        appData.clearOrder();
-    //        events.emit('basket:changed');
+        const success = new Success(cloneTemplate(orderSuccessTemplate), {
+            onClick: () => {
+                modal.close()
+                console.log('  CLICK')
+            }
+           
+        });
+        appData.clearBasket();
+        appData.clearOrder();
+        events.emit('basket:changed');
+        modal.render({content: success.render({total: result.total })})
+        })
+    .catch((err) => {
+        console.error(err);
+        })
+    })
 
-    //    })
-    //    .catch((err) => {
-    //        console.error(err);
-    //    })
-    })})
-
-
-// events.on('order:made', (result) => {
+// events.on('order:made', (result:ApiListResponse<string>) => {
+//     appData.clearBasket();
+//     appData.clearOrder();
+//     events.emit('basket:changed');
+//     modal.render({
+//         content: success.render({total: result.total })
+// })}
+// )
   
 //     const orderSuccess = new Success (cloneTemplate(orderSuccessTemplate), )
 //     modal.render({
@@ -291,18 +282,6 @@ events.on('contacts:submit', () => {
 //         })
 //     });
 // });
-
-
-
-
-
-
-// Дальше идет бизнес-логика
-// Поймали событие, сделали что нужно
-
-// Изменились элементы каталога
-//Отображение товаров на странице
-
 
 
 // Блокируем прокрутку страницы если открыта модалка
