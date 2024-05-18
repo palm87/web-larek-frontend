@@ -28,6 +28,12 @@ export class AppState extends Model<IAppState> {
     }
 
     clearBasket() {
+        this.basket.forEach(basketItem => {
+            const catalogItem = this.catalog.find(catalogItem => catalogItem.id === basketItem.id);
+            if (catalogItem) {
+                catalogItem.isInCart = false;
+            }
+        });
         this.basket =[]
     }
     clearOrder() {

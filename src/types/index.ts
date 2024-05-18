@@ -5,6 +5,7 @@ export interface IProduct {
   title: string;
   category: string;
   price: number;
+  isInCart: boolean;
 }
 
 export interface IProductsData {

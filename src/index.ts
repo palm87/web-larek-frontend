@@ -250,7 +250,6 @@ events.on('contacts:submit', () => {
         const success = new Success(cloneTemplate(orderSuccessTemplate), {
             onClick: () => {
                 modal.close()
-                console.log('  CLICK')
             }
            
         });
