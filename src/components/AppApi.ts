@@ -3,8 +3,8 @@ import {IOrder, IOrderResult, IProduct} from "../types";
 import { ICard } from './Card';
 
 export interface ILarekAPI {
-    getProductsList: () => Promise<ICard[]>;
-    getProductItem: (id: string) => Promise<ICard>;
+    getProductsList: () => Promise<IProduct[]>;
+    getProductItem: (id: string) => Promise<IProduct>;
     makeOrder: (order: IOrder) => Promise<IOrderResult>;
 }
 
@@ -17,9 +17,9 @@ export class AppApi extends Api implements ILarekAPI {
     }
 
     //получение конкретного товара
-    getProductItem(id: string): Promise<ICard> {
+    getProductItem(id: string): Promise<IProduct> {
         return this.get(`/product/${id}`).then(
-            (item: ICard) => ({
+            (item: IProduct) => ({
                 ...item,
                 image: this.cdn + item.image,
             })
@@ -27,16 +27,15 @@ export class AppApi extends Api implements ILarekAPI {
     }
 
     //получение списка товаров
-    getProductsList(): Promise<ICard[]> {
+    getProductsList(): Promise<IProduct[]> {
         return this.get('/product')
-            .then((data: ApiListResponse<ICard>) =>
+            .then((data: ApiListResponse<IProduct>) =>
             data.items.map((item) => ({
                 ...item,
                 image: this.cdn + item.image,
             }))
         );
     }
-
 
     //отправка заказа
     makeOrder(order: IOrder): Promise<IOrderResult> {

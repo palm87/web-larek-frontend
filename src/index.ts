@@ -15,17 +15,8 @@ import { Success } from './components/common/Success';
 import { ApiListResponse } from './components/base/api';
 
 
-
 const events = new EventEmitter
 const api = new AppApi(CDN_URL, API_URL);
-
-// Глобальные контейнеры
-const page = new Page(document.body, events);
-const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
-
-
-// Модель данных приложения
-const appData = new AppState({}, events);
 
 // все шаблоны
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
@@ -36,7 +27,12 @@ const orderAddressTemplate = ensureElement<HTMLTemplateElement>('#order');
 const orderContactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const orderSuccessTemplate = ensureElement<HTMLTemplateElement>('#success');
 
+// Модель данных приложения
+const appData = new AppState({}, events);
 
+// Глобальные контейнеры
+const page = new Page(document.body, events);
+const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
 // Переиспользуемые части интерфейса
 const basket = new Basket(cloneTemplate(basketTemplate), events);
@@ -44,45 +40,14 @@ const orderWithAddress = new Order(cloneTemplate(orderAddressTemplate), events);
 const orderWithContacts = new Order(cloneTemplate(orderContactsTemplate), events);
 
 
-
-// const tabs = new Tabs(orderAddressTemplate, {
-//     onClick: (name) => {
-//         if (name === 'cash') events.emit('payment:cash');
-//                 else {
-//                     events.emit('payment:online')};
-//     }
-// });
-
-// console.log(tabs)
-
-
-// events.on('payment:cash', () => {
-//     tabs.selected='cash';
-//     appData.order.payment='cash'
-//     console.log(appData.order.payment)
-// })
-
-// events.on('payment:online', () => {
-//     tabs.selected='online';
-//     tabs.selected='online';
-//     appData.order.payment='online'
-//     console.log(appData.order.payment)
-// })
-
-
-// Глобальные контейнеры
-
+// отрисовка каталога карточек после получения их данных
 events.on('items:changed', () => {
     page.catalog = appData.catalog.map((item) => {
-        // Клонируем шаблон для каждой карточки
         const templateClone = cloneTemplate(cardCatalogTemplate);
-        
-        // Создаем новую карточку, используя клонированный шаблон
         const card = new Card(templateClone, {
             onClick: () => events.emit('card:selected', item),
         });
 
-        // Отрисовываем карточку с соответствующими данными
         return card.render({
             id: item.id,
             category: item.category,
@@ -93,17 +58,11 @@ events.on('items:changed', () => {
         });
     });
 
-    // Обновляем счетчик корзины
+    // обновляем счетчик на корзине на гланой странице
     page.counter = appData.basket.length;
 });
 
 
-// Получаем карточки с сервера
-api.getProductsList()
-.then(appData.setCatalog.bind(appData))
-.catch((err) => {
-     console.error(err);
-});
 
 // Клик по карточке продукта в каталоге
 events.on('card:selected', (item: Product) => {
@@ -170,9 +129,7 @@ events.on('basket:open', () =>  {
             price: item.price,
             index: cardsIndex
         });
-        
     });
-
     modal.render({
         content: basket.render({
             items: cardsInBasket,
@@ -180,7 +137,6 @@ events.on('basket:open', () =>  {
         }),
     });
 });
-
 
 //удаление товара из корзины
 events.on('basket:delete', (item: Product) =>  {
@@ -194,11 +150,23 @@ events.on('basket:delete', (item: Product) =>  {
 events.on('order:start', () => {
     modal.render({
         content: orderWithAddress.render({
-            // payment: 'online',
-            // address: '',
+            address: '',
             valid: false,
             errors: []
         })
+    });
+});
+
+//открытие формы заказа 2й шаг(с телефоном и почтой)
+events.on('order:submit', () => {
+    // appData.order.total = appData.totalPrice;
+    modal.render({
+        content: orderWithContacts.render({
+            phone: '',
+            email: '',
+            valid: false,
+            errors: [],
+        }),
     });
 });
 
@@ -216,31 +184,6 @@ events.on('form:changeInput', (data: { field: keyof IOrderForm, value: string })
     appData.setOrderField(data.field, data.value);
 });
 
-//открытие формы заказа 2й шаг(с телефоном и почтой)
-events.on('order:submit', () => {
-    // appData.order.total = appData.totalPrice;
-    modal.render({
-        content: orderWithContacts.render({
-            phone: '',
-            email: '',
-            valid: false,
-            errors: [],
-        }),
-    });
-});
-
-
-// const success = new Success(cloneTemplate(orderSuccessTemplate), {
-//     onClick: () => {
-//         modal.close();
-//         appData.clearBasket();
-//         appData.clearOrder();
-//         events.emit('basket:changed');
-//     }
-// });
-
-
-
 //Отправка заказа на сервер
 events.on('contacts:submit', () => {
     appData.formOrder()
@@ -251,7 +194,6 @@ events.on('contacts:submit', () => {
             onClick: () => {
                 modal.close()
             }
-           
         });
         appData.clearBasket();
         appData.clearOrder();
@@ -263,26 +205,6 @@ events.on('contacts:submit', () => {
         })
     })
 
-// events.on('order:made', (result:ApiListResponse<string>) => {
-//     appData.clearBasket();
-//     appData.clearOrder();
-//     events.emit('basket:changed');
-//     modal.render({
-//         content: success.render({total: result.total })
-// })}
-// )
-  
-//     const orderSuccess = new Success (cloneTemplate(orderSuccessTemplate), )
-//     modal.render({
-//         content: orderSuccess.render({
-//             // address: '',
-//             valid: false,
-//             errors: []
-//         })
-//     });
-// });
-
-
 // Блокируем прокрутку страницы если открыта модалка
 events.on('modal:open', () => {
     page.locked = true;
@@ -293,6 +215,12 @@ events.on('modal:close', () => {
     page.locked = false;
 });
 
+// Получаем карточки с сервера
+api.getProductsList()
+.then(appData.setCatalog.bind(appData))
+.catch((err) => {
+     console.error(err);
+});
 
 
 
@@ -302,14 +230,3 @@ events.on('modal:close', () => {
 
 
 
-// api.makeOrder({
-//     "payment": "online",
-//     "email": "test@test.ru",
-//     "phone": "+71234567890",
-//     "address": "Spb Vosstania 1",
-//     "total": 2200,
-//     "items": [
-//         "854cef69-976d-4c2a-a18c-2aa45046c390",
-//         "c101ab44-ed99-4a54-990d-47aa2bb4e7d9"
-//     ]
-// })
