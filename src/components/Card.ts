@@ -1,4 +1,4 @@
-import { IProduct } from '../types';
+import { ICard, ICardActions, IProduct } from '../types';
 import { cloneTemplate, ensureElement } from '../utils/utils';
 import { Component } from './base/Component';
 import { IEvents } from './base/events';
@@ -21,19 +21,6 @@ const categoryList: Record<string, string> = {
 //     BUTTON = 'кнопка'
 // }
 
-export interface ICard {
-    title: string;
-    description: string;
-    id: string;
-    category: string;
-    image: string;
-    price: number | null;
-    isInCart: boolean;
-    index: number;
-}
-interface ICardActions {
-    onClick: (event: MouseEvent) => void;
-}
 
 export class Card extends Component<ICard> {
     protected _title: HTMLElement;
@@ -112,7 +99,6 @@ export class Card extends Component<ICard> {
                 this.button.textContent = 'Уже в корзине';
             } 
         }
-       
     }
 }
 

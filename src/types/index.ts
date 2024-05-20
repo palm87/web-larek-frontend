@@ -49,3 +49,44 @@ export interface IOrderResult {
     id: string;
     total: number
 }
+
+export interface ICard {
+  title: string;
+  description: string;
+  id: string;
+  category: string;
+  image: string;
+  price: number | null;
+  isInCart: boolean;
+  index: number;
+}
+
+export interface ICardActions {
+  onClick: (event: MouseEvent) => void;
+}
+
+export interface IModalData {
+  content: HTMLElement;
+}
+
+export interface IFormState {
+  valid: boolean;
+  errors: string[];
+}
+
+export interface IPage {
+  counter: number;
+  catalog: HTMLElement[];
+  locked: boolean;
+}
+
+export interface ILarekAPI {
+  getProductsList: () => Promise<IProduct[]>;
+  getProductItem: (id: string) => Promise<IProduct>;
+  makeOrder: (order: IOrder) => Promise<IOrderResult>;
+}
+
+export type ApiListResponse<Type> = {
+  total: number,
+  items: Type[]
+};

@@ -51,7 +51,7 @@ export class AppState extends Model<IAppState> {
     //     return this.order.items.reduce((a, c) => a + this.catalog.find(it => it.id === c).price, 0)
     // }
 
-    getTotal() {
+    getOrderTotal() {
         this.order.total= this.order.items.reduce((a, c) => a + this.catalog.find(it => it.id === c).price, 0)
     }
     getBasketTotal() {

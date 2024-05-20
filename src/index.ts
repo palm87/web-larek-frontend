@@ -1,18 +1,16 @@
 import { AppApi } from './components/AppApi';
 import { EventEmitter } from './components/base/events';
 import './scss/styles.scss';
-import { IOrderForm} from './types';
+import { IOrderForm, IProduct} from './types';
 import { API_URL, CDN_URL} from './utils/constants';
 import { Card } from './components/Card';
 import { AppState } from './components/AppData';
 import { Page } from './components/Page';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { Modal } from './components/common/Modal';
-import { Product } from './components/Product';
 import { Basket } from './components/common/Basket';
 import { Order } from './components/Order';
 import { Success } from './components/common/Success';
-import { ApiListResponse } from './components/base/api';
 
 
 const events = new EventEmitter
@@ -65,12 +63,12 @@ events.on('items:changed', () => {
 
 
 // Клик по карточке продукта в каталоге
-events.on('card:selected', (item: Product) => {
+events.on('card:selected', (item: IProduct) => {
     appData.setPreview(item);
 });
 
-events.on('preview:changed', (item: Product) => {
-    const showItem = (item: Product) => {
+events.on('preview:changed', (item: IProduct) => {
+    const showItem = (item: IProduct) => {
         const card = new Card(cloneTemplate(cardPreviewTemplate), 
         {
             onClick: () => events.emit('item:addToCart', item),
@@ -92,7 +90,6 @@ events.on('preview:changed', (item: Product) => {
     if (item) {
         api.getProductItem(item.id)
             .then((result) => {
-                // item.description = result.description;
                 showItem(item);
             })
             .catch((err) => {
@@ -103,13 +100,15 @@ events.on('preview:changed', (item: Product) => {
     }
 });
 
-events.on('item:addToCart', (item: Product) => {
+// добавление товара в корзину
+events.on('item:addToCart', (item: IProduct) => {
     item.isInCart = true;
     appData.addToCart(item);
     events.emit('basket:changed')
     modal.close();
 });
 
+// изменение корзины
 events.on('basket:changed', () =>  {
     page.counter=appData.basket.length;} 
     )
@@ -139,7 +138,7 @@ events.on('basket:open', () =>  {
 });
 
 //удаление товара из корзины
-events.on('basket:delete', (item: Product) =>  {
+events.on('basket:delete', (item: IProduct) =>  {
     item.isInCart = false;
     appData.basket = appData.basket.filter(thing=> thing !== item)
     events.emit('basket:changed');
@@ -184,10 +183,10 @@ events.on('form:changeInput', (data: { field: keyof IOrderForm, value: string })
     appData.setOrderField(data.field, data.value);
 });
 
-//Отправка заказа на сервер
+// отправка заказа на сервер
 events.on('contacts:submit', () => {
     appData.formOrder()
-    appData.getTotal()
+    appData.getOrderTotal()
     api.makeOrder(appData.order)
     .then((result) => {
         const success = new Success(cloneTemplate(orderSuccessTemplate), {
