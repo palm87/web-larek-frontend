@@ -51,8 +51,8 @@ export interface IProduct {
   image: string;
   title: string;
   category: string;
-  price: number;
-  isInCart: boolean;
+  price: number | null;
+  isInCart?: boolean;
 }
 ```
 Окно с информацией об успешном заказе

@@ -1,24 +1,7 @@
-import { ICard, ICardActions, IProduct } from '../types';
-import { cloneTemplate, ensureElement } from '../utils/utils';
+import { ICard, ICardActions} from '../types';
+import { categoryList } from '../utils/constants';
+import { ensureElement } from '../utils/utils';
 import { Component } from './base/Component';
-import { IEvents } from './base/Events';
-import { CDN_URL } from '../utils/constants';
-
-const categoryList: Record<string, string> = {
-	'софт-скил': 'soft',
-	другое: 'other',
-	дополнительное: 'additional',
-	'хард-скил': 'hard',
-	кнопка: 'button',
-};
-
-// enum Category {
-//     SOFT_SKILL = 'софт-скил',
-//     OTHER = 'другое',
-//     ADDITIONAL = 'дополнительное',
-//     HARD_SKILL = 'хард-скил',
-//     BUTTON = 'кнопка'
-// }
 
 export class Card extends Component<ICard> {
 	protected _title: HTMLElement;

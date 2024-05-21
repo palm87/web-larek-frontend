@@ -130,12 +130,14 @@ events.on('basket:delete', (item: IProduct) => {
 
 //открытие формы заказа 1й шаг(с адресом и способом оплаты)
 events.on('order:start', () => {
+	orderWithAddress.resetPayment()
 	modal.render({
 		content: orderWithAddress.render({
 			address: '',
 			valid: false,
 			errors: [],
 		}),
+		
 	});
 });
 

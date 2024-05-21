@@ -1,14 +1,15 @@
 import { Form } from './common/Form';
 import { IOrderForm } from '../types';
-import { EventEmitter, IEvents } from './base/Events';
-import { ensureElement } from '../utils/utils';
+import { IEvents } from './base/Events';
 
 export class Order extends Form<IOrderForm> {
 	protected card: HTMLButtonElement;
 	protected cash: HTMLButtonElement;
+	protected _selected: string;
 
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
+		
 		this.card = this.container.elements.namedItem('card') as HTMLButtonElement;
 		this.cash = this.container.elements.namedItem('cash') as HTMLButtonElement;
 
@@ -42,5 +43,11 @@ export class Order extends Form<IOrderForm> {
 	set address(value: string) {
 		(this.container.elements.namedItem('address') as HTMLInputElement).value =
 			value;
+	}
+
+	resetPayment () {
+		this.card.classList.remove('button_alt-active');
+		this.cash.classList.remove('button_alt-active');
+		this.card.classList.add('button_alt-active');
 	}
 }

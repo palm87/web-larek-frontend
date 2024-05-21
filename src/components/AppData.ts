@@ -1,6 +1,7 @@
 import { Model } from './base/Model';
 import { FormErrors, IAppState, IOrder, IOrderForm, IProduct } from '../types';
 import { Product } from './Product';
+import { defaultOrder } from '../utils/constants';
 
 export type CatalogChangeEvent = {
 	catalog: IProduct[];
@@ -9,14 +10,7 @@ export type CatalogChangeEvent = {
 export class AppState extends Model<IAppState> {
 	basket: IProduct[] = [];
 	catalog: IProduct[];
-	order: IOrder = {
-		payment: '123',
-		email: '',
-		phone: '',
-		address: '',
-		total: 0,
-		items: [],
-	};
+	order: IOrder = defaultOrder;
 	preview: string | null;
 	formErrors: FormErrors = {};
 
@@ -37,7 +31,7 @@ export class AppState extends Model<IAppState> {
 	}
 	clearOrder() {
 		this.order = {
-			payment: '',
+			payment: 'card',
 			email: '',
 			phone: '',
 			address: '',

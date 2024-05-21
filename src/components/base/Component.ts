@@ -1,5 +1,3 @@
-import { IEvents } from './Events';
-
 /**
  * Базовый компонент
  */
