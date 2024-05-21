@@ -9,7 +9,7 @@ export class Order extends Form<IOrderForm> {
 
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
-		
+
 		this.card = this.container.elements.namedItem('card') as HTMLButtonElement;
 		this.cash = this.container.elements.namedItem('cash') as HTMLButtonElement;
 
@@ -45,7 +45,7 @@ export class Order extends Form<IOrderForm> {
 			value;
 	}
 
-	resetPayment () {
+	resetPayment() {
 		this.card.classList.remove('button_alt-active');
 		this.cash.classList.remove('button_alt-active');
 		this.card.classList.add('button_alt-active');

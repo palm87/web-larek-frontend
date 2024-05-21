@@ -69,19 +69,19 @@ events.on('card:selected', (item: IProduct) => {
 events.on('preview:changed', (item: IProduct) => {
 	const card = new Card(cloneTemplate(cardPreviewTemplate), {
 		onClick: () => events.emit('item:addToCart', item),
-		});
-		modal.render({
-			content: card.render({
-				id: item.id,
-				category: item.category,
-				title: item.title,
-				price: item.price,
-				image: item.image,
-				description: item.description,
-				isInCart: item.isInCart,
-			}),
-		});
 	});
+	modal.render({
+		content: card.render({
+			id: item.id,
+			category: item.category,
+			title: item.title,
+			price: item.price,
+			image: item.image,
+			description: item.description,
+			isInCart: item.isInCart,
+		}),
+	});
+});
 
 // добавление товара в корзину
 events.on('item:addToCart', (item: IProduct) => {
@@ -130,14 +130,13 @@ events.on('basket:delete', (item: IProduct) => {
 
 //открытие формы заказа 1й шаг(с адресом и способом оплаты)
 events.on('order:start', () => {
-	orderWithAddress.resetPayment()
+	orderWithAddress.resetPayment();
 	modal.render({
 		content: orderWithAddress.render({
 			address: '',
 			valid: false,
 			errors: [],
 		}),
-		
 	});
 });
 

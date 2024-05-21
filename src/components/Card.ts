@@ -1,4 +1,4 @@
-import { ICard, ICardActions} from '../types';
+import { ICard, ICardActions } from '../types';
 import { categoryList } from '../utils/constants';
 import { ensureElement } from '../utils/utils';
 import { Component } from './base/Component';
