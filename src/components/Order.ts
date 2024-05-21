@@ -5,7 +5,7 @@ import { IEvents } from './base/Events';
 export class Order extends Form<IOrderForm> {
 	protected card: HTMLButtonElement;
 	protected cash: HTMLButtonElement;
-	protected _selected: string;
+	// protected _selected: string;
 
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
