@@ -1,5 +1,5 @@
 import { AppApi } from './components/AppApi';
-import { EventEmitter } from './components/base/events';
+import { EventEmitter } from './components/base/Events';
 import './scss/styles.scss';
 import { IOrderForm, IProduct} from './types';
 import { API_URL, CDN_URL} from './utils/constants';

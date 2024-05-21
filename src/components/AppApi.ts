@@ -1,4 +1,4 @@
-import { Api  } from './base/api';
+import { Api  } from './base/Api';
 import {ILarekAPI, IOrder, IOrderResult, IProduct, ApiListResponse} from "../types";
 
 export class AppApi extends Api implements ILarekAPI {

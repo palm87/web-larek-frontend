@@ -1,7 +1,7 @@
 import { ICard, ICardActions, IProduct } from '../types';
 import { cloneTemplate, ensureElement } from '../utils/utils';
 import { Component } from './base/Component';
-import { IEvents } from './base/events';
+import { IEvents } from './base/Events';
 import { CDN_URL } from '../utils/constants';
 
 
